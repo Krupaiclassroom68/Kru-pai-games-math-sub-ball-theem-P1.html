@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kru Pai Classroom · Fantasy Subtract Ball (Yellow)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+    body {
+        font-family: "Trebuchet MS", sans-serif;
+        background: radial-gradient(circle at top, #fff7da, #ffe8a3, #ffe0b2);
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        color: #444;
+        overflow-x: hidden;
+    }
+    h1 {
+        font-size: 32px;
+        margin-top: 18px;
+        color: #b8860b;
+        text-shadow: 0 0 8px rgba(255,255,255,0.7);
+    }
+    h2 {
+        color: #555;
+    }
+    .card {
+        max-width: 960px;
+        margin: 10px auto 20px auto;
+        background: rgba(255,255,240,0.95);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        padding: 20px;
+        box-sizing: border-box;
+    }
+    .big-input {
+        font-size: 22px;
+        padding: 10px 15px;
+        border-radius: 999px;
+        border: 2px solid #ffd54f;
+        width: 260px;
+        text-align: center;
+        outline: none;
+    }
+    .main-btn {
+        background: linear-gradient(135deg,#ffe082,#ffca28);
+        color: #5d4037;
+        border: none;
+        padding: 12px 30px;
+        font-size: 22px;
+        border-radius: 999px;
+        cursor: pointer;
+        margin-top: 15px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+    .main-btn:hover {
+        transform: translateY(-1px);
+    }
+    .menu-title {
+        margin-top: 10px;
+        color: #666;
+    }
+    .set-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        margin: 6px 0;
+        flex-wrap: wrap;
+    }
+    .set-btn {
+        background: linear-gradient(135deg,#ffd54f,#ffb300);
+        border: none;
+        padding: 8px 22px;
+        border-radius: 999px;
+        font-size: 18px;
+        cursor: pointer;
+        color: #4e342e;
+        min-width: 90px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    .set-btn:hover {
+        filter: brightness(1.05);
+    }
+    .set-score {
+        font-size: 14px;
+        color: #555;
+        background: rgba(255,255,255,0.85);
+        padding: 4px 12px;
+        border-radius: 999px;
+        min-width: 130px;
+    }
+    .time-btn {
+        background: rgba(255,255,255,0.7);
+        border: 2px solid #ffca28;
+        padding: 8px 20px;
+        border-radius: 999px;
+        font-size: 16px;
+        cursor: pointer;
+        margin: 4px;
+        color: #5d4037;
+    }
+    .time-btn.active {
+        background: #ffca28;
+        color: #4e342e;
+    }
+    #timer {
+        font-size: 24px;
+        color: #c49000;
+        margin-top: 5px;
+    }
+    #questionCounter {
+        font-size: 18px;
+        color: #555;
+        margin-top: 5px;
+    }
+    .question-text {
+        font-size: 34px;
+        margin: 14px 0;
+        color: #333;
+        text-shadow: 0 0 4px rgba(255,255,255,0.8);
+    }
+    .ball-container {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 18px;
+        margin-top: 18px;
+        min-height: 120px;
+    }
+    .ball-btn {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        font-size: 32px;
+        font-weight: bold;
+        color: #000000;
+        background: radial-gradient(circle at 30% 20%, #ffffffdd, #fff3c0);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        animation-name: floatAround;
+        animation-iteration-count: infinite;
+        animation-direction: alternate;
+        animation-timing-function: ease-in-out;
+    }
+    .ball-btn.disabled {
+        cursor: default;
+        opacity: 0.75;
+    }
+    .ball-btn.wrong-flash {
+        animation: glowWrong 0.4s ease-out;
+    }
+    .ball-btn.explode {
+        animation: explodeBall 0.4s ease-out forwards;
+    }
+    @keyframes floatAround {
+        0%   { transform: translate(0px, 0px); }
+        25%  { transform: translate(8px, -6px); }
+        50%  { transform: translate(-10px, 6px); }
+        75%  { transform: translate(6px, -8px); }
+        100% { transform: translate(-6px, 4px); }
+    }
+    @keyframes glowWrong {
+        0% { box-shadow: 0 0 0 rgba(244,67,54,0.0); }
+        100% { box-shadow: 0 0 20px rgba(244,67,54,0.9); }
+    }
+    @keyframes explodeBall {
+        0% { transform: scale(1); opacity: 1; }
+        100% { transform: scale(1.6); opacity: 0; }
+    }
+    #scoreBox {
+        margin-top: 15px;
+        padding: 15px;
+        border-radius: 16px;
+        background: rgba(255,253,231,0.95);
+        border: 2px solid #ffe082;
+        font-size: 22px;
+        color: #5d4037;
+    }
+    #backBtn {
+        margin-top: 18px;
+        background: #f4b400;
+        color: #fff;
+        padding: 10px 26px;
+        border: none;
+        border-radius: 999px;
+        cursor: pointer;
+        font-size: 18px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    }
+    #backBtn:hover {
+        filter: brightness(1.05);
+    }
+    #playerNameShow {
+        font-size: 18px;
+        color: #555;
+        margin-top: 5px;
+    }
+    .confetti-piece {
+        position: fixed;
+        width: 6px;
+        height: 10px;
+        opacity: 0.9;
+        pointer-events: none;
+        border-radius: 2px;
+        animation: confettiFall 0.9s ease-out forwards;
+    }
+    @keyframes confettiFall {
+        0% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(60px) rotate(360deg);
+            opacity: 0;
+        }
+    }
+
+    @media (max-width: 768px) {
+        body {
+            padding: 0;
+        }
+        .card {
+            max-width: 100%;
+            width: 100%;
+            margin: 0;
+            border-radius: 0;
+            min-height: 100vh;
+            padding: 16px 10px 20px 10px;
+        }
+        h1 {
+            font-size: 7vw;
+            margin-top: 12px;
+        }
+        h2 {
+            font-size: 5.2vw;
+        }
+        .menu-title,
+        .set-score,
+        #playerNameShow {
+            font-size: 4vw;
+        }
+        .big-input {
+            width: 80%;
+            font-size: 5.5vw;
+        }
+        .main-btn,
+        .set-btn,
+        .time-btn,
+        #backBtn {
+            font-size: 4.5vw;
+            padding: 9px 18px;
+        }
+        .question-text {
+            font-size: 6.5vw;
+        }
+        #questionCounter {
+            font-size: 4.5vw;
+        }
+        #timer {
+            font-size: 5.5vw;
+        }
+        .ball-btn {
+            width: 20vw;
+            height: 20vw;
+            font-size: 7vw;
+        }
+        #scoreBox {
+            font-size: 5vw;
+        }
+    }
+</style>
+</head>
+<body>
+
+<h1>Kru Pai Classroom · Fantasy Subtract Ball</h1>
+
+<div id="startScreen" class="card">
+    <h2>Type your name before you start</h2>
+    <input id="playerName" class="big-input" placeholder="Your nickname...">
+    <br>
+    <button class="main-btn" onclick="startHome()">Start</button>
+</div>
+
+<div id="home" class="card" style="display:none;">
+    <h2>Choose a yellow subtraction set</h2>
+    <div id="playerNameShow"></div>
+    <p class="menu-title">
+        6 sets · 20 questions in each set<br>
+        Mixed: one-digit, two-digit, and missing number subtraction
+    </p>
+
+    <div class="set-row">
+        <button class="set-btn" onclick="startSet(1)">Set 1</button>
+        <span class="set-score" id="scoreSet1">Not played</span>
+    </div>
+    <div class="set-row">
+        <button class="set-btn" onclick="startSet(2)">Set 2</button>
+        <span class="set-score" id="scoreSet2">Not played</span>
+    </div>
+    <div class="set-row">
+        <button class="set-btn" onclick="startSet(3)">Set 3</button>
+        <span class="set-score" id="scoreSet3">Not played</span>
+    </div>
+    <div class="set-row">
+        <button class="set-btn" onclick="startSet(4)">Set 4</button>
+        <span class="set-score" id="scoreSet4">Not played</span>
+    </div>
+    <div class="set-row">
+        <button class="set-btn" onclick="startSet(5)">Set 5</button>
+        <span class="set-score" id="scoreSet5">Not played</span>
+    </div>
+    <div class="set-row">
+        <button class="set-btn" onclick="startSet(6)">Set 6</button>
+        <span class="set-score" id="scoreSet6">Not played</span>
+    </div>
+
+    <h3>Timer mode</h3>
+    <button id="timeOnBtn"  class="time-btn"        onclick="setTimer(true)">Timed · 60 seconds</button>
+    <button id="timeOffBtn" class="time-btn active" onclick="setTimer(false)">No timer</button>
+</div>
+
+<div id="game" class="card" style="display:none;">
+    <h2 id="setTitle"></h2>
+    <div id="timer"></div>
+    <div id="questionCounter"></div>
+    <div id="questionText" class="question-text"></div>
+    <div id="ballContainer" class="ball-container"></div>
+    <div id="scoreBox" style="display:none;"></div>
+    <button id="backBtn" onclick="goHome()">Back to set menu</button>
+</div>
+
+<script>
+let isTimed = false;
+let timerCount = 60;
+let timerInterval;
+let currentSet = 1;
+let currentIndex = 0;
+let questions = [];
+let score = 0;
+let scores = Array(7).fill(null);
+let playerName = "";
+let questionLocked = false;
+
+let audioCtx = null;
+function initAudio() {
+    if (!audioCtx) {
+        try {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+            audioCtx = null;
+        }
+    }
+}
+function playBeep(freq, duration, volume) {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.frequency.value = freq;
+    osc.type = "sine";
+    const now = audioCtx.currentTime;
+    gain.gain.setValueAtTime(volume, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+    osc.start(now);
+    osc.stop(now + duration);
+}
+function playClick()   { initAudio(); playBeep(700, 0.08, 0.1); }
+function playCorrect() { initAudio(); playBeep(900, 0.15, 0.15); }
+function playWrong()   { initAudio(); playBeep(220, 0.18, 0.15); }
+
+function startHome() {
+    playClick();
+    const nameInput = document.getElementById("playerName").value.trim();
+    playerName = nameInput || "Student";
+    document.getElementById("playerNameShow").innerText = "Player: " + playerName;
+    document.getElementById("startScreen").style.display = "none";
+    document.getElementById("home").style.display = "block";
+    updateScoreboard();
+}
+
+function setTimer(choice) {
+    playClick();
+    isTimed = choice;
+    const onBtn  = document.getElementById("timeOnBtn");
+    const offBtn = document.getElementById("timeOffBtn");
+    if (isTimed) {
+        onBtn.classList.add("active");
+        offBtn.classList.remove("active");
+    } else {
+        offBtn.classList.add("active");
+        onBtn.classList.remove("active");
+    }
+}
+
+function startSet(setNum) {
+    playClick();
+    currentSet = setNum;
+    score = 0;
+    currentIndex = 0;
+    questions = [];
+    questionLocked = false;
+    document.getElementById("scoreBox").style.display = "none";
+    document.getElementById("scoreBox").innerHTML = "";
+    document.getElementById("setTitle").innerText = "Fantasy Subtraction · Set " + currentSet;
+
+    for (let i = 0; i < 20; i++) {
+        questions.push(createQuestionForSet(currentSet));
+    }
+
+    document.getElementById("home").style.display = "none";
+    document.getElementById("game").style.display = "block";
+
+    clearInterval(timerInterval);
+    if (isTimed) {
+        timerCount = 60;
+        document.getElementById("timer").innerHTML = "⏳ Time left: " + timerCount + " s";
+        timerInterval = setInterval(function() {
+            timerCount--;
+            document.getElementById("timer").innerHTML = "⏳ Time left: " + timerCount + " s";
+            if (timerCount <= 0) {
+                clearInterval(timerInterval);
+                endSet(true);
+            }
+        }, 1000);
+    } else {
+        document.getElementById("timer").innerHTML = "";
+    }
+
+    showQuestion();
+}
+
+function createQuestionForSet(setNum) {
+    let type;
+    if (setNum <= 2) {
+        type = Math.random() < 0.7 ? 0 : 1;
+    } else if (setNum <= 4) {
+        const r = Math.random();
+        if (r < 0.4) type = 0;
+        else if (r < 0.7) type = 1;
+        else type = 2;
+    } else {
+        const r = Math.random();
+        if (r < 0.3) type = 0;
+        else if (r < 0.6) type = 1;
+        else type = 2;
+    }
+
+    let a, b, result;
+    if (setNum <= 2) {
+        a = Math.floor(Math.random() * 9) + 1;
+        b = Math.floor(Math.random() * (a + 1));
+    } else if (setNum <= 4) {
+        if (Math.random() < 0.6) {
+            a = Math.floor(Math.random() * 9) + 1;
+            b = Math.floor(Math.random() * (a + 1));
+        } else {
+            let tens = Math.floor(Math.random() * 4) + 1;
+            let units = Math.floor(Math.random() * 10);
+            a = tens * 10 + units;
+            let maxB = a % 10;
+            if (Math.random() < 0.5) {
+                b = Math.floor(Math.random() * (maxB + 1));
+            } else {
+                do {
+                    b = Math.floor(Math.random() * 10);
+                } while (b > a);
+            }
+        }
+    } else {
+        if (Math.random() < 0.3) {
+            a = Math.floor(Math.random() * 9) + 1;
+            b = Math.floor(Math.random() * (a + 1));
+        } else {
+            let tens = Math.floor(Math.random() * 5) + 1;
+            let units = Math.floor(Math.random() * 10);
+            a = tens * 10 + units;
+            do {
+                b = Math.floor(Math.random() * 10);
+            } while (b > a);
+        }
+    }
+
+    result = a - b;
+
+    let questionText;
+    let correct;
+    if (type === 0) {
+        questionText = `${a} − ${b} = ?`;
+        correct = result;
+    } else if (type === 1) {
+        questionText = `□ − ${b} = ${result}`;
+        correct = a;
+    } else {
+        questionText = `${a} − □ = ${result}`;
+        correct = b;
+    }
+
+    const options = createOptions(correct);
+    return { questionText, correct, options };
+}
+
+function createOptions(correct) {
+    const opts = [correct];
+    while (opts.length < 4) {
+        let delta = Math.floor(Math.random() * 7) - 3;
+        if (delta === 0) continue;
+        let candidate = correct + delta;
+        if (candidate < 0) continue;
+        if (!opts.includes(candidate)) {
+            opts.push(candidate);
+        }
+    }
+    for (let i = opts.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [opts[i], opts[j]] = [opts[j], opts[i]];
+    }
+    return opts;
+}
+
+function showQuestion() {
+    if (currentIndex >= questions.length) {
+        endSet(false);
+        return;
+    }
+    questionLocked = false;
+    const q = questions[currentIndex];
+    document.getElementById("questionText").textContent = q.questionText;
+    document.getElementById("questionCounter").textContent =
+        "Question " + (currentIndex + 1) + " / " + questions.length;
+
+    const container = document.getElementById("ballContainer");
+    container.innerHTML = "";
+    q.options.forEach(val => {
+        const btn = document.createElement("button");
+        btn.className = "ball-btn";
+        btn.textContent = val;
+        const duration = 4 + Math.random() * 3;
+        const delay = Math.random() * 2;
+        btn.style.animationDuration = duration + "s";
+        btn.style.animationDelay = delay + "s";
+        btn.onclick = () => chooseAnswer(btn, val);
+        container.appendChild(btn);
+    });
+}
+
+function confettiAtElement(el) {
+    const rect = el.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const topY = rect.top;
+
+    const colors = ["#ffeb3b","#ffc107","#ff9800","#ffffff"];
+
+    for (let i = 0; i < 35; i++) {
+        const piece = document.createElement("div");
+        piece.className = "confetti-piece";
+        const xOffset = (Math.random() - 0.5) * 60;
+        piece.style.left = (centerX + xOffset) + "px";
+        piece.style.top = (topY + Math.random() * 20) + "px";
+
+        piece.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
+        piece.style.animationDuration = (0.7 + Math.random()*0.5) + "s";
+        piece.style.transform = "rotate(" + (Math.random()*360) + "deg)";
+        document.body.appendChild(piece);
+
+        setTimeout(() => {
+            piece.remove();
+        }, 1200);
+    }
+}
+
+function chooseAnswer(btn, value) {
+    if (questionLocked) return;
+    questionLocked = true;
+
+    const q = questions[currentIndex];
+    const allBalls = document.querySelectorAll(".ball-btn");
+    allBalls.forEach(b => b.classList.add("disabled"));
+
+    if (value === q.correct) {
+        score++;
+        playCorrect();
+        confettiAtElement(btn);
+        btn.classList.add("explode");
+    } else {
+        playWrong();
+        btn.classList.add("wrong-flash");
+    }
+
+    setTimeout(() => {
+        currentIndex++;
+        showQuestion();
+    }, 650);
+}
+
+function endSet(timeUp) {
+    clearInterval(timerInterval);
+    document.getElementById("ballContainer").innerHTML = "";
+    document.getElementById("questionText").textContent = "";
+    document.getElementById("questionCounter").textContent = "";
+
+    scores[currentSet] = score;
+    updateScoreboard();
+
+    const box = document.getElementById("scoreBox");
+    box.style.display = "block";
+    let msg = "";
+    if (timeUp) {
+        msg += "Time's up! ";
+    }
+    msg += playerName + ", you scored " + score + " out of " + questions.length + ". ";
+    if (score === questions.length) {
+        msg += "Perfect subtraction master! 🌟";
+    } else if (score >= Math.floor(questions.length * 0.7)) {
+        msg += "Great work! Keep training your subtraction power! 💛";
+    } else {
+        msg += "Don't worry, you can try this set again and get a higher score! ✨";
+    }
+    box.innerHTML = msg;
+}
+
+function updateScoreboard() {
+    for (let s = 1; s <= 6; s++) {
+        const span = document.getElementById("scoreSet"+s);
+        if (!span) continue;
+        if (scores[s] === null) {
+            span.textContent = "Not played";
+        } else {
+            span.textContent = "Last: " + scores[s] + "/20";
+        }
+    }
+}
+
+function goHome() {
+    playClick();
+    clearInterval(timerInterval);
+    document.getElementById("game").style.display = "none";
+    document.getElementById("home").style.display = "block";
+    document.getElementById("scoreBox").style.display = "none";
+}
+</script>
+
+</body>
+</html>
